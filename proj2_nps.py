@@ -143,8 +143,18 @@ def get_sites_for_state(state_url):
     list
         a list of national site instances
     '''
-    pass
+    national_site_inst_list = []
+    state_soup = BeautifulSoup(requests.get(state_url).text, 'html.parser')
+    all_site_link = state_soup.find_all(class_='col-md-9 col-sm-9 col-xs-12 table-cell list_left')
+    for link in all_site_link:
+        park_link = link.find('a')['href']
+        site_url = BASEURL + '/' + park_link + '/' + 'index.htm'
+        national_site_inst_list.append(get_site_instance(site_url))
 
+    # print(national_site_inst_list)
+    return national_site_inst_list
+
+get_sites_for_state('https://www.nps.gov/state/mi/index.htm')
 
 def get_nearby_places(site_object):
     '''Obtain API data from MapQuest API.
