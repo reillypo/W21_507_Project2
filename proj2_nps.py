@@ -1,6 +1,6 @@
 #################################
-##### Name:
-##### Uniqname:
+##### Name: Reilly Potter
+##### Uniqname: reillypo
 #################################
 
 from bs4 import BeautifulSoup
