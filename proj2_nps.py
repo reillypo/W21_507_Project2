@@ -151,7 +151,7 @@ def get_sites_for_state(state_url):
         site_url = BASEURL + '/' + park_link + '/' + 'index.htm'
         national_site_inst_list.append(get_site_instance(site_url))
 
-    print(national_site_inst_list)
+    # print(national_site_inst_list)
     return national_site_inst_list
 
 get_sites_for_state('https://www.nps.gov/state/mi/index.htm')
