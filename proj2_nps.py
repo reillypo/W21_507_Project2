@@ -16,7 +16,7 @@ CACHEFILE = "cache.json"
 def open_cache(CACHEFILE):
     try:
         with open(CACHEFILE,'r') as cache_file:
-            cache_json = file.read()
+            cache_json = cache_file.read()
             cache_diction = json.loads(cache_json)
     except:
         cache_diction = {}
@@ -98,8 +98,9 @@ def build_state_url_dict():
     #iterate over each list item, find link and name.
     for tag in states_tags:
         url = tag.find('a')['href']
+        full_url = BASEURL + url
         name = tag.find('a').contents[0]
-        state_sites_dict[name] = url
+        state_sites_dict[name.lower()] = full_url
     # print(state_sites_dict)
     return state_sites_dict
        
@@ -120,10 +121,10 @@ def get_site_instance(site_url):
     '''
     page_soup = BeautifulSoup(requests.get(site_url).text, 'html.parser')
     name = page_soup.find(class_='Hero-title').contents[0]
-    category = page_soup.find(class_='Hero-designation').contents[0]
-    address =  page_soup.find(itemprop="addressLocality").contents[0] + ', ' + page_soup.find(class_="region").contents[0]
-    zipcode =  page_soup.find(class_="postal-code").contents[0]
-    phone = page_soup.find(class_='tel').contents[0]
+    category = page_soup.find(class_='Hero-designation').contents[0].strip(' ')
+    address =  page_soup.find(itemprop="addressLocality").contents[0].strip(' ') + ', ' + page_soup.find(itemprop="addressRegion").contents[0].strip(' ')#page_soup.find(class_="region").contents[0]
+    zipcode =  page_soup.find(itemprop="postalCode").contents[0].strip(' ')#page_soup.find(class_="postal-code").contents[0]
+    phone = page_soup.find(class_='tel').contents[0].strip('\n')
 
     site_instance = NationalSite(category, name, address, zipcode, phone)
     return site_instance
@@ -154,7 +155,7 @@ def get_sites_for_state(state_url):
     # print(national_site_inst_list)
     return national_site_inst_list
 
-get_sites_for_state('https://www.nps.gov/state/mi/index.htm')
+# get_sites_for_state('https://www.nps.gov/state/mi/index.htm')
 
 def get_nearby_places(site_object):
     '''Obtain API data from MapQuest API.
@@ -170,7 +171,17 @@ def get_nearby_places(site_object):
         a converted API return from MapQuest API
     '''
     pass
-    
+
+def main():
+    state_url_dict = build_state_url_dict()
+    state_url_user = state_url_dict[input_var.lower()]
+    # print(state_url_user)
+    inst_list_func = get_sites_for_state(state_url_user)
+    # print(inst_list_func)
+    for z in range(len(inst_list_func)):
+        print("[" + str(z+1) + "]" + " " + inst_list_func[z].info())
+
 
 if __name__ == "__main__":
-    pass
+    input_var = input('Enter a state name (case-insensitive): ')
+    main()
