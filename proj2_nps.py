@@ -120,11 +120,31 @@ def get_site_instance(site_url):
         a national site instance
     '''
     page_soup = BeautifulSoup(requests.get(site_url).text, 'html.parser')
-    name = page_soup.find(class_='Hero-title').contents[0]
-    category = page_soup.find(class_='Hero-designation').contents[0].strip(' ')
-    address =  page_soup.find(itemprop="addressLocality").contents[0].strip(' ') + ', ' + page_soup.find(itemprop="addressRegion").contents[0].strip(' ')#page_soup.find(class_="region").contents[0]
-    zipcode =  page_soup.find(itemprop="postalCode").contents[0].strip(' ')#page_soup.find(class_="postal-code").contents[0]
-    phone = page_soup.find(class_='tel').contents[0].strip('\n')
+    try:
+        name = page_soup.find(class_='Hero-title').contents[0]
+    except:
+        name = "No name"
+    try:
+        category = page_soup.find(class_='Hero-designation').contents[0].strip(' ')
+    except:
+        category = "No category"
+    try:
+        city =  page_soup.find(itemprop="addressLocality").contents[0].strip(' ')#page_soup.find(class_="region").contents[0]
+    except:
+        city = "No city"
+    try:
+        state = page_soup.find(itemprop="addressRegion").contents[0].strip(' ')
+    except:
+        state = "No state"
+    address = city + ', ' + state
+    try:
+        zipcode =  page_soup.find(itemprop="postalCode").contents[0].strip(' ')#page_soup.find(class_="postal-code").contents[0]
+    except:
+        zipcode = "No zipcode"
+    try:
+        phone = page_soup.find(class_='tel').contents[0].strip('\n')
+    except:
+        phone = "No phone number"
 
     site_instance = NationalSite(category, name, address, zipcode, phone)
     return site_instance
