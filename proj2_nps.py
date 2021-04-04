@@ -31,13 +31,13 @@ def cache_data(CACHEFILE,url,cache_diction,new_data):
 cache_diction = open_cache(CACHEFILE)
 
 # try to get the data out of the dictionary; if not, make a request to get it and then cache it
-baseurl_data = cache_diction.get(BASEURL)
-if not baseurl_data:
-    baseurl_data = requests.get(BASEURL).text
-    cache_data(CACHEFILE,BASEURL,cache_diction,baseurl_data)
+# baseurl_data = cache_diction.get(BASEURL)
+# if not baseurl_data:
+#     baseurl_data = requests.get(BASEURL).text
+#     cache_data(CACHEFILE,BASEURL,cache_diction,baseurl_data)
 
-#create BeautifulSoup object
-soup = BeautifulSoup(baseurl_data, "html.parser")
+# #create BeautifulSoup object
+# soup = BeautifulSoup(baseurl_data, "html.parser")
 
 
 
@@ -90,6 +90,26 @@ def build_state_url_dict():
         key is a state name and value is the url
         e.g. {'michigan':'https://www.nps.gov/state/mi/index.htm', ...}
     '''
+    if BASEURL in cache_diction.keys():
+        print("Using Cache", BASEURL)
+        baseurl_data = cache_diction[BASEURL]
+    else:
+        print("Fetching", BASEURL)
+        cache_diction[BASEURL] = requests.get(BASEURL).text
+        baseurl_data = cache_diction[BASEURL]
+        cache_data(CACHEFILE, BASEURL, cache_diction, baseurl_data)
+    
+    # try:
+    #     baseurl_data = cache_diction.get(BASEURL)
+    #     print("Using Cache")
+    # # if not baseurl_data:
+    # except:
+    #     print("Fetching")
+    #     baseurl_data = requests.get(BASEURL).text
+    #     cache_data(CACHEFILE,BASEURL,cache_diction,baseurl_data)
+    
+    soup = BeautifulSoup(baseurl_data, "html.parser")
+
     state_sites_dict = {}
     # get the text of the class that contains the list of states in the dropdown and add each state to the database if it doesn't already exist
     dropdown = soup.find('ul', class_='dropdown-menu SearchBar-keywordSearch')
@@ -119,7 +139,17 @@ def get_site_instance(site_url):
     instance
         a national site instance
     '''
-    page_soup = BeautifulSoup(requests.get(site_url).text, 'html.parser')
+    if site_url in cache_diction.keys():
+        print("Using Cache", site_url)
+        siteurl_data = cache_diction[site_url]
+    else:
+        print("Fetching", site_url)
+        cache_diction[site_url] = requests.get(site_url).text
+        siteurl_data = cache_diction[site_url]
+        cache_data(CACHEFILE, site_url, cache_diction, siteurl_data)
+    
+    page_soup = BeautifulSoup(siteurl_data, 'html.parser')
+    
     try:
         name = page_soup.find(class_='Hero-title').contents[0]
     except:
@@ -164,8 +194,17 @@ def get_sites_for_state(state_url):
     list
         a list of national site instances
     '''
+    if state_url in cache_diction.keys():
+        print("Using Cache", state_url)
+        stateurl_data = cache_diction[state_url]
+    else:
+        print("Fetching", state_url)
+        cache_diction[state_url] = requests.get(state_url).text
+        stateurl_data = cache_diction[state_url]
+        cache_data(CACHEFILE, state_url, cache_diction, stateurl_data)
+    
     national_site_inst_list = []
-    state_soup = BeautifulSoup(requests.get(state_url).text, 'html.parser')
+    state_soup = BeautifulSoup(stateurl_data, 'html.parser')
     all_site_link = state_soup.find_all(class_='col-md-9 col-sm-9 col-xs-12 table-cell list_left')
     for link in all_site_link:
         park_link = link.find('a')['href']
@@ -198,6 +237,10 @@ def main():
     # print(state_url_user)
     inst_list_func = get_sites_for_state(state_url_user)
     # print(inst_list_func)
+    print("---------------------------------------")
+    print(f'List of national sites in {input_var}')
+    print("---------------------------------------")
+
     for z in range(len(inst_list_func)):
         print("[" + str(z+1) + "]" + " " + inst_list_func[z].info())
 
