@@ -14,6 +14,18 @@ BASEURL = 'https://www.nps.gov'
 CACHEFILE = "cache.json"
 
 def open_cache(CACHEFILE):
+    ''' Opens the cache file if it exists and loads the JSON into
+    the cache_diction dictionary.
+    if the cache file doesn't exist, creates a new cache dictionary
+    
+    Parameters
+    ----------
+    CACHEFILE: json file
+    
+    Returns
+    -------
+    The opened cache: dict
+    '''
     try:
         with open(CACHEFILE,'r') as cache_file:
             cache_json = cache_file.read()
@@ -23,6 +35,23 @@ def open_cache(CACHEFILE):
     return cache_diction
 
 def cache_data(CACHEFILE,url,cache_diction,new_data):
+    ''' Saves the current state of the cache to disk
+    
+    Parameters
+    ----------
+    cache_diction: dict
+        The dictionary to save
+    CACHEFILE: json
+        The json file you'll populate
+    url: str
+        url of information you're caching
+    new_data: dict
+        information pulled from site
+    
+    Returns
+    -------
+    None
+    '''
     with open(CACHEFILE,'w') as cache_file:
         cache_diction[url] = new_data
         cache_json = json.dumps(cache_diction)
@@ -229,7 +258,49 @@ def get_nearby_places(site_object):
     dict
         a converted API return from MapQuest API
     '''
-    pass
+    baseurl_api = 'http://www.mapquestapi.com/search/v2/radius?'
+    API_KEY = secrets.API_KEY
+    params = {'key': API_KEY, 'origin': site_object.zipcode, 'radius': 10, 'maxMatches': 10, "ambiguities": "ignore", "outFormat": "json"}#start here
+    param_strings = []
+    connector = '&'
+    for k in params.keys():
+        param_strings.append(f'{k}={params[k]}')
+    param_strings.sort()
+    unique_key = baseurl_api + connector.join(param_strings)
+    # print(unique_key)
+    # return unique_key
+    if unique_key in cache_diction.keys():
+        print("Using Cache")
+        response_j = cache_diction[unique_key]
+    else:
+        print("Fetching")
+        response = requests.get(unique_key)
+        response_j = response.json()
+        cache_diction[unique_key] = response_j
+        unique_key_data = cache_diction[unique_key]
+        cache_data(CACHEFILE, unique_key, cache_diction, unique_key_data)
+    
+    i = 0
+    while i<10:#i < len(response_j) and
+        if len(response_j['searchResults'][i]['name'])>0:
+            name = response_j['searchResults'][i]['name']
+        else:
+            name = "no name"
+        if len(response_j['searchResults'][i]['fields']['group_sic_code_name'])>0:
+            category = response_j['searchResults'][i]['fields']['group_sic_code_name']
+        else:
+            category = "no category"
+        if len(response_j['searchResults'][i]['fields']['address'])>0:
+            address = response_j['searchResults'][i]['fields']['address']
+        else:
+            address = "no address"
+        if len(response_j['searchResults'][i]['fields']['city'])>0:
+            city_name = response_j['searchResults'][i]['fields']['city']
+        else:
+            city_name = "no city"
+            
+        print(f'{name} ({category}): {address}, {city_name}')
+        i += 1
 
 def main():
     state_url_dict = build_state_url_dict()
@@ -237,6 +308,32 @@ def main():
     # print(state_url_user)
     inst_list_func = get_sites_for_state(state_url_user)
     # print(inst_list_func)
+    get_nearby_places(inst_list_func[4])
+    # i = 0
+    # while i < len(inst_list_func) and i<10:
+    #     # for site_object in inst_list_func:
+    #         nearby_place = get_nearby_places(site_object)
+    #         # print(nearby_place)
+    #         if len(nearby_place['searchResults'][i]['name'])>0:
+    #             name = nearby_place['searchResults'][i]['name']
+    #         else:
+    #             name = "no name"
+    #         if len(nearby_place['searchResults'][i]['fields']['group_sic_code_name'])>0:
+    #             category = nearby_place['searchResults'][i]['fields']['group_sic_code_name']
+    #         else:
+    #             category = "no category"
+    #         if len(nearby_place['searchResults'][i]['fields']['address'])>0:
+    #             address = nearby_place['searchResults'][i]['fields']['address']
+    #         else:
+    #             address = "no address"
+    #         if len(nearby_place['searchResults'][i]['fields']['city'])>0:
+    #             city_name = nearby_place['searchResults'][i]['fields']['city']
+    #         else:
+    #             city_name = "no city"
+            
+    #         print(f'{name} ({category}): {address}, {city_name}')
+    #         i += 1
+
     print("---------------------------------------")
     print(f'List of national sites in {input_var}')
     print("---------------------------------------")
