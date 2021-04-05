@@ -320,7 +320,8 @@ if __name__ == "__main__":
                     print()
                     print('Bye!')
                     exit()
-            
+                elif input_num.isnumeric() == False:
+                    print("Please enter a numeral like '8' or '2'.")
 
 
 
