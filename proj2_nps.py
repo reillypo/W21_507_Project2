@@ -301,6 +301,7 @@ def get_nearby_places(site_object):
             
         print(f'{name} ({category}): {address}, {city_name}')
         i += 1
+        return response_j
 
 # def main():
     # state_url_dict = build_state_url_dict()
