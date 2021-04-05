@@ -59,15 +59,6 @@ def cache_data(CACHEFILE,url,cache_diction,new_data):
 
 cache_diction = open_cache(CACHEFILE)
 
-# try to get the data out of the dictionary; if not, make a request to get it and then cache it
-# baseurl_data = cache_diction.get(BASEURL)
-# if not baseurl_data:
-#     baseurl_data = requests.get(BASEURL).text
-#     cache_data(CACHEFILE,BASEURL,cache_diction,baseurl_data)
-
-# #create BeautifulSoup object
-# soup = BeautifulSoup(baseurl_data, "html.parser")
-
 
 
 class NationalSite:
@@ -120,10 +111,10 @@ def build_state_url_dict():
         e.g. {'michigan':'https://www.nps.gov/state/mi/index.htm', ...}
     '''
     if BASEURL in cache_diction.keys():
-        print("Using Cache", BASEURL)
+        print("Using Cache")
         baseurl_data = cache_diction[BASEURL]
     else:
-        print("Fetching", BASEURL)
+        print("Fetching")
         cache_diction[BASEURL] = requests.get(BASEURL).text
         baseurl_data = cache_diction[BASEURL]
         cache_data(CACHEFILE, BASEURL, cache_diction, baseurl_data)
@@ -169,10 +160,10 @@ def get_site_instance(site_url):
         a national site instance
     '''
     if site_url in cache_diction.keys():
-        print("Using Cache", site_url)
+        print("Using Cache")
         siteurl_data = cache_diction[site_url]
     else:
-        print("Fetching", site_url)
+        print("Fetching")
         cache_diction[site_url] = requests.get(site_url).text
         siteurl_data = cache_diction[site_url]
         cache_data(CACHEFILE, site_url, cache_diction, siteurl_data)
@@ -224,10 +215,10 @@ def get_sites_for_state(state_url):
         a list of national site instances
     '''
     if state_url in cache_diction.keys():
-        print("Using Cache", state_url)
+        print("Using Cache")
         stateurl_data = cache_diction[state_url]
     else:
-        print("Fetching", state_url)
+        print("Fetching")
         cache_diction[state_url] = requests.get(state_url).text
         stateurl_data = cache_diction[state_url]
         cache_data(CACHEFILE, state_url, cache_diction, stateurl_data)
@@ -280,6 +271,7 @@ def get_nearby_places(site_object):
         unique_key_data = cache_diction[unique_key]
         cache_data(CACHEFILE, unique_key, cache_diction, unique_key_data)
     
+   
     i = 0
     while i<10:#i < len(response_j) and
         if len(response_j['searchResults'][i]['name'])>0:
@@ -298,10 +290,9 @@ def get_nearby_places(site_object):
             city_name = response_j['searchResults'][i]['fields']['city']
         else:
             city_name = "no city"
-            
         print(f'{name} ({category}): {address}, {city_name}')
         i += 1
-        return response_j
+    return response_j
 
 # def main():
     # state_url_dict = build_state_url_dict()
@@ -372,7 +363,10 @@ if __name__ == "__main__":
                 elif input_num.isnumeric() == True and int(input_num) > len(inst_list_func):
                     print("Please enter a number within your search results.")
                     continue
-                elif input_num.isnumeric() == True and int(input_num) < len(inst_list_func):
+                elif input_num.isnumeric() == True and (int(input_num)-1) < len(inst_list_func):
+                    print("---------------------------------------")
+                    print(f'Places near {(inst_list_func[int(input_num)-1]).name}')
+                    print("---------------------------------------")
                     get_nearby_places(inst_list_func[int(input_num)-1])
                 elif input_num.lower() == "exit":
                     print()
