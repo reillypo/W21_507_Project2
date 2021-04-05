@@ -302,13 +302,13 @@ def get_nearby_places(site_object):
         print(f'{name} ({category}): {address}, {city_name}')
         i += 1
 
-def main():
-    state_url_dict = build_state_url_dict()
-    state_url_user = state_url_dict[input_var.lower()]
+# def main():
+    # state_url_dict = build_state_url_dict()
+    # state_url_user = state_url_dict[input_var.lower()]
     # print(state_url_user)
-    inst_list_func = get_sites_for_state(state_url_user)
+    # inst_list_func = get_sites_for_state(state_url_user)
     # print(inst_list_func)
-    get_nearby_places(inst_list_func[4])
+    # get_nearby_places(inst_list_func[4])
     # i = 0
     # while i < len(inst_list_func) and i<10:
     #     # for site_object in inst_list_func:
@@ -334,14 +334,50 @@ def main():
     #         print(f'{name} ({category}): {address}, {city_name}')
     #         i += 1
 
-    print("---------------------------------------")
-    print(f'List of national sites in {input_var}')
-    print("---------------------------------------")
+    # print("---------------------------------------")
+    # print(f'List of national sites in {input_var}')
+    # print("---------------------------------------")
 
-    for z in range(len(inst_list_func)):
-        print("[" + str(z+1) + "]" + " " + inst_list_func[z].info())
+    # for z in range(len(inst_list_func)):
+    #     print("[" + str(z+1) + "]" + " " + inst_list_func[z].info())
 
 
 if __name__ == "__main__":
-    input_var = input('Enter a state name (case-insensitive): ')
-    main()
+    # input_var = input('Enter a state name (case-insensitive) or "exit": ')
+    # main()
+
+
+    while True:
+        state_url_dict = build_state_url_dict()
+        input_var = input('Enter a state name (case-insensitive) or "exit": ')
+        if input_var.lower() == "exit":
+            print()
+            print("Bye!")
+            break
+        elif input_var.lower() not in state_url_dict.keys():
+            print("[Error] Enter proper state name")
+        elif input_var.lower() in state_url_dict.keys():
+            state_url_user = state_url_dict[input_var.lower()]
+            inst_list_func = get_sites_for_state(state_url_user)
+            print("---------------------------------------")
+            print(f'List of national sites in {input_var}')
+            print("---------------------------------------")
+            for z in range(len(inst_list_func)):
+                print("[" + str(z+1) + "]" + " " + inst_list_func[z].info())
+            while True:
+                input_num = input("Enter a number for places nearby to site, or 'back' to select a new state, or 'exit': ")
+                if input_num.lower() == "back":
+                    break
+                elif input_num.isnumeric() == True and int(input_num) > len(inst_list_func):
+                    print("Please enter a number within your search results.")
+                    continue
+                elif input_num.isnumeric() == True and int(input_num) < len(inst_list_func):
+                    get_nearby_places(inst_list_func[int(input_num)-1])
+                elif input_num.lower() == "exit":
+                    print()
+                    print('Bye!')
+                    exit()
+            
+
+
+
