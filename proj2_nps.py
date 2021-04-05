@@ -273,7 +273,7 @@ def get_nearby_places(site_object):
     
    
     i = 0
-    while i<10:#i < len(response_j) and
+    while i < int(response_j['resultsCount']) and i<10:#i < len(response_j['hostedData']) and
         if len(response_j['searchResults'][i]['name'])>0:
             name = response_j['searchResults'][i]['name']
         else:
@@ -290,55 +290,12 @@ def get_nearby_places(site_object):
             city_name = response_j['searchResults'][i]['fields']['city']
         else:
             city_name = "no city"
-        print(f'{name} ({category}): {address}, {city_name}')
+        print(f'- {name} ({category}): {address}, {city_name}')
         i += 1
     return response_j
 
-# def main():
-    # state_url_dict = build_state_url_dict()
-    # state_url_user = state_url_dict[input_var.lower()]
-    # print(state_url_user)
-    # inst_list_func = get_sites_for_state(state_url_user)
-    # print(inst_list_func)
-    # get_nearby_places(inst_list_func[4])
-    # i = 0
-    # while i < len(inst_list_func) and i<10:
-    #     # for site_object in inst_list_func:
-    #         nearby_place = get_nearby_places(site_object)
-    #         # print(nearby_place)
-    #         if len(nearby_place['searchResults'][i]['name'])>0:
-    #             name = nearby_place['searchResults'][i]['name']
-    #         else:
-    #             name = "no name"
-    #         if len(nearby_place['searchResults'][i]['fields']['group_sic_code_name'])>0:
-    #             category = nearby_place['searchResults'][i]['fields']['group_sic_code_name']
-    #         else:
-    #             category = "no category"
-    #         if len(nearby_place['searchResults'][i]['fields']['address'])>0:
-    #             address = nearby_place['searchResults'][i]['fields']['address']
-    #         else:
-    #             address = "no address"
-    #         if len(nearby_place['searchResults'][i]['fields']['city'])>0:
-    #             city_name = nearby_place['searchResults'][i]['fields']['city']
-    #         else:
-    #             city_name = "no city"
-            
-    #         print(f'{name} ({category}): {address}, {city_name}')
-    #         i += 1
-
-    # print("---------------------------------------")
-    # print(f'List of national sites in {input_var}')
-    # print("---------------------------------------")
-
-    # for z in range(len(inst_list_func)):
-    #     print("[" + str(z+1) + "]" + " " + inst_list_func[z].info())
-
 
 if __name__ == "__main__":
-    # input_var = input('Enter a state name (case-insensitive) or "exit": ')
-    # main()
-
-
     while True:
         state_url_dict = build_state_url_dict()
         input_var = input('Enter a state name (case-insensitive) or "exit": ')
