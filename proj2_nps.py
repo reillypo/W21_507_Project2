@@ -119,15 +119,6 @@ def build_state_url_dict():
         baseurl_data = cache_diction[BASEURL]
         cache_data(CACHEFILE, BASEURL, cache_diction, baseurl_data)
     
-    # try:
-    #     baseurl_data = cache_diction.get(BASEURL)
-    #     print("Using Cache")
-    # # if not baseurl_data:
-    # except:
-    #     print("Fetching")
-    #     baseurl_data = requests.get(BASEURL).text
-    #     cache_data(CACHEFILE,BASEURL,cache_diction,baseurl_data)
-    
     soup = BeautifulSoup(baseurl_data, "html.parser")
 
     state_sites_dict = {}
